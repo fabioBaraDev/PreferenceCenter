@@ -1,0 +1,14 @@
+version: "3.6"
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: localdev
+      TZ: GMT
+      PGTZ: GMT
+    ports:
+      - 5432:5432

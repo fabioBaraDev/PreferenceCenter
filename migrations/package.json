@@ -1,0 +1,15 @@
+{
+  "name": "preference-center-migrations",
+  "version": "1.0.0",
+  "description": "Project of preference center database migrations",
+  "main": "index.js",
+  "scripts": {
+    "migrate:up": "db-migrate up --config config/database.json -e db"
+  },
+  "author": "Fabio Bara",
+  "license": "ISC",
+  "dependencies": {
+    "db-migrate": "^0.11.13",
+    "db-migrate-pg": "^1.2.2"
+  }
+}

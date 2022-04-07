@@ -1,0 +1,7 @@
+.idea/
+node_modules/
+task-definition.json
+.vscode
+dist/
+coverage/
+.DS_Store

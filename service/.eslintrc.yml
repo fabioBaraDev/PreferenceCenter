@@ -1,0 +1,37 @@
+env:
+  es2020: true
+  node: true
+  jest: true
+extends:
+  - eslint:recommended
+  - plugin:prettier/recommended
+  - plugin:@typescript-eslint/recommended
+  - prettier
+parser: "@typescript-eslint/parser"
+parserOptions:
+  ecmaVersion: 11
+  sourceType: module
+plugins:
+  - prettier
+  - "@typescript-eslint"
+  - simple-import-sort
+ignorePatterns: build
+rules:
+  prettier/prettier: error
+  simple-import-sort/imports: warn
+  "@typescript-eslint/no-unused-vars":
+    - error
+    - args: all
+      argsIgnorePattern: ^_
+      caughtErrors: all
+      vars: all
+      varsIgnorePattern: ^_
+  "@typescript-eslint/ban-ts-comment":
+    - error
+    - ts-ignore: allow-with-description
+overrides:
+  - files:
+      - "tests/**/*.ts"
+      - "**/*.spec.ts"
+    rules:
+      "@typescript-eslint/no-explicit-any": 0
