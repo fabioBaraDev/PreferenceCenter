@@ -16,9 +16,10 @@ exports.setup = (options, seedLink) => {
 
 exports.up = async (db) => {
   await db.runSql(`
-    CREATE TABLE "events" (
+    CREATE TABLE "history_events" (
       "id" serial,
       "user_id" int NOT NULL,
+      "updated_at" timestamptz not null default now(),
       "type" varchar,
       "status" boolean,
       PRIMARY KEY ("id"),
@@ -29,7 +30,7 @@ exports.up = async (db) => {
 
 exports.down = async (db) => {
   await db.runSql(`
-    DROP TABLE "events";
+    DROP TABLE "history_events";
   `);
 };
 
