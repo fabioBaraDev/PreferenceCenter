@@ -3,7 +3,7 @@ import { HistoryEventType } from './value-objects'
 export type User = Readonly<{
   id?: number
   email: string
-  events?: [Event]
+  events: Event[]
 }>
 
 export type Event = Readonly<{

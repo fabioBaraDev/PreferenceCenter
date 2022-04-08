@@ -18,7 +18,7 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
       .returning(['id', 'email'])
 
   const del = async (payload: UserPayload): Promise<void[]> =>
-    knex('users').where(payload).del()
+    knex('users').where('email', payload.email).del()
 
   const findById = async (id: number): Promise<User> =>
     knex('users').select('id', 'email').where('id', id).first()
@@ -26,7 +26,7 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
   const findByEmail = async (email: string): Promise<User[]> =>
     knex('users').select('id', 'email').where('email', email)
 
-  return { upsert, delete: del, findById, findByEmail }
+  return { upsert, deleteByEmail: del, findById, findByEmail }
 }
 
 const eventRepository = (knex: Knex.Transaction): EventRepository => {
