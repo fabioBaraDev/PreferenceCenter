@@ -1,14 +1,16 @@
-import { User } from './entities'
+import { Event, HistoryEvents, User } from './entities'
+import { HistoryEventType } from './value-objects'
 
 export type UserPayload = {
+  id?: number
   email: string
   consents?: [string]
 }
 
 export type EventPayload = {
-  id: number
-  city?: string
-  province_code?: string
+  user_id: number
+  type: HistoryEventType
+  status: boolean
 }
 
 export interface UserRepository {
@@ -20,4 +22,10 @@ export interface UserRepository {
 
 export interface EventRepository {
   upsert: (payload: EventPayload) => Promise<Event>
+  insertHistory: (payload: EventPayload) => Promise<HistoryEvents>
+}
+
+export interface DatabaseRepository {
+  user: UserRepository
+  event: EventRepository
 }
