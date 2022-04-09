@@ -22,6 +22,7 @@ exports.up = async (db) => {
       "type" varchar,
       "status" boolean,
       PRIMARY KEY ("id"),
+      UNIQUE ("user_id", "type"),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
