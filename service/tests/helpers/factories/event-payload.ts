@@ -9,8 +9,11 @@ export const userPayloadFactory = (): UserPayload => ({
   email: faker.internet.email(),
 })
 
-export const eventPayloadFactory = (user_id?: number): EventPayload => ({
+export const eventPayloadFactory = (
+  user_id?: number,
+  type?: HistoryEventType
+): EventPayload => ({
   user_id: user_id ?? faker.datatype.number(),
-  type: HistoryEventType.SMS_NOTIFICATION,
+  type: type ?? HistoryEventType.SMS_NOTIFICATION,
   status: faker.datatype.boolean(),
 })

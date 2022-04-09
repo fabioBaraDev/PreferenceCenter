@@ -21,10 +21,33 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
     knex('users').where('email', payload.email).del()
 
   const findById = async (id: number): Promise<User> =>
-    knex('users').select('id', 'email').where('id', id).first()
+    knex
+      .select(
+        'u.id as id',
+        'u.email as email',
+        knex.raw(
+          `json_agg(json_build_object('id', e.id, 'user_id', e.user_id, 'type', e.type, 'status', e.status)) as events`
+        )
+      )
+      .from('users as u')
+      .leftJoin('events as e', 'u.id', '=', 'e.user_id')
+      .where('u.id', '=', id)
+      .groupBy('u.id', 'u.email')
+      .first()
 
   const findByEmail = async (email: string): Promise<User[]> =>
-    knex('users').select('id', 'email').where('email', email)
+    knex
+      .select(
+        'u.id as id',
+        'u.email as email',
+        knex.raw(
+          `json_agg(json_build_object('id', e.id, 'user_id', e.user_id, 'type', e.type, 'status', e.status)) as events`
+        )
+      )
+      .from('users as u')
+      .leftJoin('events as e', 'u.id', '=', 'e.user_id')
+      .where('u.email', email)
+      .groupBy('u.id', 'u.email')
 
   return { upsert, deleteByEmail: del, findById, findByEmail }
 }
@@ -33,6 +56,8 @@ const eventRepository = (knex: Knex.Transaction): EventRepository => {
   const upsert = (payload: EventPayload): Promise<Event> =>
     knex('events')
       .insert(payload)
+      .onConflict(['user_id', 'type'])
+      .merge()
       .returning(['id', 'user_id', 'type', 'status'])
 
   const insertHistory = (payload: EventPayload): Promise<HistoryEvents> =>
