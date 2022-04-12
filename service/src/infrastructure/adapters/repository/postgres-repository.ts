@@ -2,23 +2,23 @@ import { Knex } from 'knex'
 
 import { Event, HistoryEvents, User } from '../../../domain/model/entities'
 import {
-  DatabaseRepository,
-  EventPayload,
   EventRepository,
-  UserPayload,
+  Repositories,
   UserRepository,
 } from './../../../domain/model/repository'
 
 const userRepository = (knex: Knex.Transaction): UserRepository => {
-  const upsert = async (payload: UserPayload): Promise<User> =>
-    knex('users')
+  const upsert = async (payload: User): Promise<User> => {
+    const res = await knex('users')
       .insert({
         email: payload.email,
       })
       .returning(['id', 'email'])
+    return res[0]
+  }
 
-  const del = async (payload: UserPayload): Promise<void[]> =>
-    knex('users').where('email', payload.email).del()
+  const del = async (email: string): Promise<void[]> =>
+    knex('users').where('email', email).del()
 
   const findById = async (id: number): Promise<User> =>
     knex
@@ -53,14 +53,14 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
 }
 
 const eventRepository = (knex: Knex.Transaction): EventRepository => {
-  const upsert = (payload: EventPayload): Promise<Event> =>
+  const upsert = (payload: Event): Promise<Event> =>
     knex('events')
       .insert(payload)
       .onConflict(['user_id', 'type'])
       .merge()
       .returning(['id', 'user_id', 'type', 'status'])
 
-  const insertHistory = (payload: EventPayload): Promise<HistoryEvents> =>
+  const insertHistory = (payload: Event): Promise<HistoryEvents> =>
     knex('history_events')
       .insert({
         user_id: payload.user_id,
@@ -72,9 +72,7 @@ const eventRepository = (knex: Knex.Transaction): EventRepository => {
   return { upsert, insertHistory }
 }
 
-export const buildRepositories = (
-  knex: Knex.Transaction
-): DatabaseRepository => ({
+export const buildRepositories = (knex: Knex.Transaction): Repositories => ({
   user: userRepository(knex),
   event: eventRepository(knex),
 })

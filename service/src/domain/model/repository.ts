@@ -13,18 +13,18 @@ export type EventPayload = {
 }
 
 export interface UserRepository {
-  upsert: (payload: UserPayload) => Promise<User>
-  deleteByEmail: (payload: UserPayload) => Promise<void[]>
+  upsert: (payload: User) => Promise<User>
+  deleteByEmail: (email: string) => Promise<void[]>
   findById: (id: number) => Promise<User>
   findByEmail: (email: string) => Promise<User[]>
 }
 
 export interface EventRepository {
-  upsert: (payload: EventPayload) => Promise<Event>
-  insertHistory: (payload: EventPayload) => Promise<HistoryEvents>
+  upsert: (payload: Event) => Promise<Event>
+  insertHistory: (payload: Event) => Promise<HistoryEvents>
 }
 
-export interface DatabaseRepository {
+export interface Repositories {
   user: UserRepository
   event: EventRepository
 }

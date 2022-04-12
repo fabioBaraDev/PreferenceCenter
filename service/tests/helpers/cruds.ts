@@ -37,6 +37,6 @@ export const insertUser = (db: Knex, user: UserPayload): Promise<User> =>
     .insert({ email: user.email })
     .returning('*')
     .then(([payload]) => payload)
-
+//BARA Rename
 export const insertEvents = (db: Knex, events: EventPayload[]): Promise<void> =>
   db('events').insert(events)

@@ -1,9 +1,6 @@
 import { Knex } from 'knex'
-import { always, andThen, identity, partial, pipe } from 'ramda'
 
-import { User } from '@/domain/model/entities'
-import { DatabaseRepository, EventPayload } from '@/domain/model/repository'
-import { HistoryEventType } from '@/domain/model/value-objects'
+import { Repositories } from '@/domain/model/repository'
 import database from '@/infrastructure/database'
 
 import {
@@ -13,47 +10,18 @@ import {
   insertEvents,
 } from '../../../../tests/helpers/cruds'
 import { clearDatabase } from '../../../../tests/helpers/infrastructure'
-import { insertUser } from './../../../../tests/helpers/cruds'
 import {
-  eventPayloadFactory,
+  createUserWithEvents,
+  getDataBaseUser,
+  getEvents,
+  getUserId,
   userPayloadFactory,
 } from './../../../../tests/helpers/factories/event-payload'
 import { buildRepositories } from './postgres-repository'
 
-const getUserId = (user: User) => (user.id ? user.id : 0)
-
-const getDataBaseUser = (db: Knex): Promise<User> =>
-  pipe(userPayloadFactory, partial(insertUser, [db]), andThen(identity))()
-
-const createEmailEvent = (userId: number) =>
-  eventPayloadFactory(userId, HistoryEventType.EMAIL_NOTIFICATIONS)
-
-const createSMSEvent = (userId: number) =>
-  eventPayloadFactory(userId, HistoryEventType.SMS_NOTIFICATION)
-
-const createEvents = (user: User) => {
-  const userId = getUserId(user)
-
-  return [createSMSEvent(userId), createEmailEvent(userId)]
-}
-
-const getEvents = (db: Knex): Promise<EventPayload[]> =>
-  pipe(getDataBaseUser, andThen(createEvents))(db)
-
-const createUserWithEvents = async (db: Knex): Promise<User> => {
-  const getUser = always(await getDataBaseUser(db))
-
-  return await pipe(
-    getUser,
-    pipe(createEvents, partial(insertEvents, [db])),
-    andThen(identity),
-    getUser
-  )()
-}
-
 describe('postgres-repository test', () => {
   let db: Knex
-  let repository: (knex: Knex.Transaction) => DatabaseRepository
+  let repository: (knex: Knex.Transaction) => Repositories
 
   beforeAll(async () => {
     db = await database.connect()
@@ -79,7 +47,9 @@ describe('postgres-repository test', () => {
     it('should delete a user with a correct data', async () => {
       const user = await getDataBaseUser(db)
 
-      await db.transaction((trx) => repository(trx).user.deleteByEmail(user))
+      await db.transaction((trx) =>
+        repository(trx).user.deleteByEmail(user.email)
+      )
 
       const createdUser = await getUserByEmail(db, user.email)
 
