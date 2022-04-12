@@ -59,6 +59,7 @@ const eventRepository = (knex: Knex.Transaction): EventRepository => {
       .onConflict(['user_id', 'type'])
       .merge()
       .returning(['id', 'user_id', 'type', 'status'])
+      .then((rows) => rows[0])
 
   const insertHistory = (payload: Event): Promise<HistoryEvents> =>
     knex('history_events')
