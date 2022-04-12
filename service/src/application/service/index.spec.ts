@@ -20,13 +20,13 @@ import {
 } from '@/tests/helpers/factories/event-payload'
 
 import { buildRepositories } from '../../infrastructure/adapters/repository/postgres-repository'
-import { buildEventService, buildUserService } from './index'
+import { buildServices } from './index'
 
 const buildUserServices = (trx: Knex.Transaction) =>
-  pipe(buildRepositories, buildUserService)(trx)
+  pipe(buildRepositories, buildServices, unary(prop('user')))(trx)
 
 const buildEventServices = (trx: Knex.Transaction) =>
-  pipe(buildRepositories, buildEventService)(trx)
+  pipe(buildRepositories, buildServices, unary(prop('event')))(trx)
 
 const getUserUpsertService = unary(prop('upsert'))
 const getUserDeleteService = unary(prop('delete'))
@@ -135,8 +135,8 @@ describe('services test', () => {
         pipe(buildUserServices, getFindUserByEmailService, applyTo(user.email))
       )
 
-      expect(foundUser[0].email).toStrictEqual(user.email)
-      expect(foundUser[0].id).toStrictEqual(user.id)
+      expect(foundUser.email).toStrictEqual(user.email)
+      expect(foundUser.id).toStrictEqual(user.id)
     })
 
     it('should find a user by email multiple events', async () => {
@@ -146,8 +146,8 @@ describe('services test', () => {
         pipe(buildUserServices, getFindUserByEmailService, applyTo(user.email))
       )
 
-      expect(foundUser[0].events.length).toStrictEqual(2)
-      expect(foundUser[0].id).toStrictEqual(user.id)
+      expect(foundUser.events.length).toStrictEqual(2)
+      expect(foundUser.id).toStrictEqual(user.id)
     })
   })
 

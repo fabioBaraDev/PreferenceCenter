@@ -1,5 +1,5 @@
 export enum ERRORS_CODES {
-  NotValidEmail = '1',
+  NotValidEmail = 'NotValidEmailError',
 }
 
 export const rejectInvalidEmail = (): never => {
@@ -8,5 +8,5 @@ export const rejectInvalidEmail = (): never => {
 
 const InvalidEmailError = (): Error => ({
   name: ERRORS_CODES.NotValidEmail,
-  message: 'Error: the email data is not valid',
+  message: 'The email data is not valid',
 })

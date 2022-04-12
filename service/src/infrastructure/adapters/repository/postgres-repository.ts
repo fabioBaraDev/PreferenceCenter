@@ -14,6 +14,9 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
         email: payload.email,
       })
       .returning(['id', 'email'])
+      .onConflict(['email'])
+      .merge()
+
     return res[0]
   }
 
@@ -35,7 +38,7 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
       .groupBy('u.id', 'u.email')
       .first()
 
-  const findByEmail = async (email: string): Promise<User[]> =>
+  const findByEmail = async (email: string): Promise<User> =>
     knex
       .select(
         'u.id as id',
@@ -48,6 +51,7 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
       .leftJoin('events as e', 'u.id', '=', 'e.user_id')
       .where('u.email', email)
       .groupBy('u.id', 'u.email')
+      .first()
 
   return { upsert, deleteByEmail: del, findById, findByEmail }
 }

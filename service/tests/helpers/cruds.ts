@@ -26,6 +26,20 @@ export const getUserByIdWithEvents = (db: Knex, id: number): Promise<User> =>
     .groupBy('u.id', 'u.email')
     .first()
 
+export const getUsersByEmail = (db: Knex, email: string): Promise<User[]> =>
+  db
+    .select(
+      'u.id as id',
+      'u.email as email',
+      db.raw(
+        `json_agg(json_build_object('id', e.id, 'user_id', e.user_id, 'type', e.type, 'status', e.status)) as events`
+      )
+    )
+    .from('users as u')
+    .leftJoin('events as e', 'u.id', '=', 'e.user_id')
+    .where('u.email', '=', email)
+    .groupBy('u.id', 'u.email')
+
 export const getHistoricalEventByUserId = (
   db: Knex,
   id: number

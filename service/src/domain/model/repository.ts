@@ -16,7 +16,7 @@ export interface UserRepository {
   upsert: (payload: User) => Promise<User>
   deleteByEmail: (email: string) => Promise<void[]>
   findById: (id: number) => Promise<User>
-  findByEmail: (email: string) => Promise<User[]>
+  findByEmail: (email: string) => Promise<User>
 }
 
 export interface EventRepository {

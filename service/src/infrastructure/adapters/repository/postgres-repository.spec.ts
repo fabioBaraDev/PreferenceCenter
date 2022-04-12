@@ -7,6 +7,7 @@ import {
   getHistoricalEventByUserId,
   getUserByEmail,
   getUserByIdWithEvents,
+  getUsersByEmail,
   insertEvents,
 } from '../../../../tests/helpers/cruds'
 import { clearDatabase } from '../../../../tests/helpers/infrastructure'
@@ -38,8 +39,19 @@ describe('postgres-repository test', () => {
 
       await db.transaction((trx) => repository(trx).user.upsert(user))
 
-      const createdUser = await getUserByEmail(db, user.email)
+      const createdUser = await getUsersByEmail(db, user.email)
 
+      expect(createdUser.length).toStrictEqual(1)
+    })
+
+    it('should not insert a user with a same email correct data', async () => {
+      const user = userPayloadFactory()
+
+      await db.transaction((trx) => repository(trx).user.upsert(user))
+      await db.transaction((trx) => repository(trx).user.upsert(user))
+
+      const createdUser = await getUserByEmail(db, user.email)
+      expect(createdUser)
       expect(user.email).toStrictEqual(createdUser.email)
       expect(createdUser.id).not.toBeNull()
     })
@@ -87,8 +99,8 @@ describe('postgres-repository test', () => {
         repository(trx).user.findByEmail(user.email)
       )
 
-      expect(foundUser[0].email).toStrictEqual(user.email)
-      expect(foundUser[0].id).toStrictEqual(user.id)
+      expect(foundUser.email).toStrictEqual(user.email)
+      expect(foundUser.id).toStrictEqual(user.id)
     })
 
     it('should find a user by email multiple events', async () => {
@@ -98,8 +110,8 @@ describe('postgres-repository test', () => {
         repository(trx).user.findByEmail(user.email)
       )
 
-      expect(foundUser[0].events.length).toStrictEqual(2)
-      expect(foundUser[0].id).toStrictEqual(user.id)
+      expect(foundUser.events.length).toStrictEqual(2)
+      expect(foundUser.id).toStrictEqual(user.id)
     })
   })
 
