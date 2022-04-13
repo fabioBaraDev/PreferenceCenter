@@ -5,9 +5,9 @@ import { andThen, applyTo, pipe, prop, unary } from 'ramda'
 import { Infrastructure } from '@/infrastructure'
 
 import { buildEventService } from '../../application/service'
+import { Event } from '../../domain/model/entities'
 import { buildRepositories } from '../../infrastructure/adapters/repository/postgres-repository'
 import { getEventMapper } from '../mapper'
-import { Event } from './../../../src/domain/model/entities'
 import { eventValidators, inputHasValidData } from './validators'
 
 const insertedMsg = (event: Event) =>

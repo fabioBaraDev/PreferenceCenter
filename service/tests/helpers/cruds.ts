@@ -9,7 +9,8 @@ import { EventPayload } from './../../src/domain/model/repository'
 export const getUserByEmail = (db: Knex, email: string): Promise<User> =>
   db('users').where('email', '=', email).first()
 
-//knex('accounts').jsonSet('json_col', '$.name', { "name": "newName" }, 'newNameCol')
+export const getUserById = (db: Knex, id: number): Promise<User> =>
+  db('users').where('id', '=', id).first()
 
 export const getUserByIdWithEvents = (db: Knex, id: number): Promise<User> =>
   db
@@ -51,6 +52,6 @@ export const insertUser = (db: Knex, user: UserPayload): Promise<User> =>
     .insert({ email: user.email })
     .returning('*')
     .then(([payload]) => payload)
-//BARA Rename
+
 export const insertEvents = (db: Knex, events: EventPayload[]): Promise<void> =>
   db('events').insert(events)

@@ -18,6 +18,7 @@ import {
   getUserId,
   userPayloadFactory,
 } from '@/tests/helpers/factories/event-payload'
+import { clearDatabase } from '@/tests/helpers/infrastructure'
 
 import { buildRepositories } from '../../infrastructure/adapters/repository/postgres-repository'
 import { buildServices } from './index'
@@ -51,6 +52,10 @@ describe('services test', () => {
   beforeAll(async () => {
     db = await database.connect()
   })
+
+  beforeEach(() => clearDatabase(db))
+
+  afterAll(() => database.close())
 
   describe('#USER TESTS', () => {
     const runUserUpsertService = async (user: User) =>

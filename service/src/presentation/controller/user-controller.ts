@@ -5,9 +5,9 @@ import { andThen, applyTo, ifElse, pipe, prop, unary } from 'ramda'
 import { Infrastructure } from '@/infrastructure'
 
 import { buildUserService } from '../../application/service'
+import { User } from '../../domain/model/entities'
 import { buildRepositories } from '../../infrastructure/adapters/repository/postgres-repository'
 import { userMapper } from '../mapper'
-import { User } from './../../../src/domain/model/entities'
 
 const insertedMsg = (serviceResponse: User) =>
   Object.freeze(
