@@ -3,6 +3,7 @@ import { andThen, identity, pipe } from 'ramda'
 import { Repositories } from '@/domain/model/repository'
 
 import { Event, User, validateEmail } from '../../domain/model/entities'
+import { rejectInvalidUser } from '../../domain/model/erros'
 
 export interface EventService {
   upsert: (event: Event) => Promise<Event>
@@ -37,12 +38,19 @@ export const buildUserService = (repository: Repositories): UserService => {
 }
 
 export const buildEventService = (repository: Repositories): EventService => {
-  const upsert = (event: Event): Promise<Event> =>
-    pipe(
-      repository.event.upsert,
-      andThen(repository.event.insertHistory),
-      andThen(identity)
-    )(event)
+  const eventHasValidUser = async (event: Event) => {
+    const user = await repository.user.findById(event.user_id)
+    if (user == undefined) {
+      throw rejectInvalidUser()
+    }
+  }
+  const upsert = async (event: Event): Promise<Event> => {
+    await eventHasValidUser(event)
+    const newEvent = await repository.event.upsert(event)
+    await repository.event.insertHistory(event)
+
+    return newEvent
+  }
 
   return { upsert }
 }

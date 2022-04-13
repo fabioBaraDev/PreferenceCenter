@@ -1,4 +1,4 @@
 export enum HistoryEventType {
-  SMS_NOTIFICATION = 'SMS_NOTIFICATION',
-  EMAIL_NOTIFICATIONS = 'EMAIL_NOTIFICATIONS',
+  SMS_NOTIFICATION = 'sms_notifications',
+  EMAIL_NOTIFICATIONS = 'email_notifications',
 }
