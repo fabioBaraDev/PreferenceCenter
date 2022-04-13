@@ -14,7 +14,7 @@ export type EventPayload = {
 
 export interface UserRepository {
   upsert: (payload: User) => Promise<User>
-  deleteByEmail: (email: string) => Promise<void[]>
+  deleteByEmail: (email: string) => Promise<number>
   findById: (id: number) => Promise<User>
   findByEmail: (email: string) => Promise<User>
 }

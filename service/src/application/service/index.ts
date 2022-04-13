@@ -11,7 +11,7 @@ export interface EventService {
 
 export interface UserService {
   upsert: (user: User) => Promise<User>
-  delete: (email: string) => Promise<void[]>
+  delete: (email: string) => Promise<number>
   findUserByEmail: (email: string) => Promise<User>
   findUserById: (id: number) => Promise<User>
 }
@@ -25,7 +25,7 @@ export const buildUserService = (repository: Repositories): UserService => {
   const upsert = (user: User): Promise<User> =>
     pipe(validateEmail, repository.user.upsert, andThen(identity))(user)
 
-  const del = (email: string): Promise<void[]> =>
+  const del = (email: string): Promise<number> =>
     pipe(repository.user.deleteByEmail, andThen(identity))(email)
 
   const findUserByEmail = (email: string): Promise<User> =>
@@ -40,6 +40,7 @@ export const buildUserService = (repository: Repositories): UserService => {
 export const buildEventService = (repository: Repositories): EventService => {
   const eventHasValidUser = async (event: Event) => {
     const user = await repository.user.findById(event.user_id)
+
     if (user == undefined) {
       throw rejectInvalidUser()
     }

@@ -20,8 +20,10 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
     return res[0]
   }
 
-  const del = async (email: string): Promise<void[]> =>
-    knex('users').where('email', email).del()
+  const del = async (email: string): Promise<number> => {
+    const res = await knex('users').where('email', email).del()
+    return res
+  }
 
   const findById = async (id: number): Promise<User> =>
     knex

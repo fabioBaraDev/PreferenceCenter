@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express'
 import { Knex } from 'knex'
-import { andThen, applyTo, pipe, prop, unary } from 'ramda'
+import { andThen, applyTo, ifElse, pipe, prop, unary } from 'ramda'
 
 import { Infrastructure } from '@/infrastructure'
 
@@ -75,8 +75,14 @@ export const UserController = async (
     const { email } = req.params
 
     const getService = unary(prop('delete'))
-    const sendDeleteMsgToResponse = () =>
-      res.status(202).send(deletedMsg(email))
+
+    const sendDeleteMsgToResponse = (deletedAmout: number) => {
+      const dataHasBeenDeleted = () => deletedAmout > 0
+      const deleteSucessMessage = () => res.status(202).send(deletedMsg(email))
+      const deleteErrorMessage = () => res.status(404).send(NOT_FOUND_USER_MSG)
+
+      ifElse(dataHasBeenDeleted, deleteSucessMessage, deleteErrorMessage)()
+    }
 
     infra.database.transaction(
       await pipe(
