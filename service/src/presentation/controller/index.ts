@@ -3,7 +3,6 @@ import express, { Express } from 'express'
 
 import { connect as connectInfrastructure } from './../../infrastructure'
 import { EventController } from './events'
-// import { EventController } from './events'
 import { UserController } from './user'
 
 const app: Express = express()

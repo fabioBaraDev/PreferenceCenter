@@ -9,14 +9,16 @@ import { buildRepositories } from '../../infrastructure/adapters/repository/post
 import { userMapper } from '../mapper'
 import { User } from './../../../src/domain/model/entities'
 
-const insertedMsg = (email: string) =>
-  Object.freeze(`User with email: ${email} inserted successfully`)
+const insertedMsg = (serviceResponse: User) =>
+  Object.freeze(
+    `User with email: ${serviceResponse.email} and ID: ${serviceResponse.id}    inserted successfully`
+  )
 
 const deletedMsg = (email: string) =>
   Object.freeze(`User with email: ${email} deleted successfully`)
 
 const sendResponse = (res: Response) => (serviceResponse: User) =>
-  res.status(200).send(insertedMsg(serviceResponse.email))
+  res.status(200).send(insertedMsg(serviceResponse))
 
 const sendUserObjectToResponse = (res: Response) => (user: User) =>
   res.status(200).send(user)
@@ -55,7 +57,7 @@ export const UserController = async (
           andThen(sendResponse(res))
         )(trx)
       } catch (e) {
-        res.status(400).send(e)
+        res.status(422).send(e)
       }
     })
   })
