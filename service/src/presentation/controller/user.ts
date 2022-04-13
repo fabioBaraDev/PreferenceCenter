@@ -17,11 +17,20 @@ const insertedMsg = (serviceResponse: User) =>
 const deletedMsg = (email: string) =>
   Object.freeze(`User with email: ${email} deleted successfully`)
 
+const NOT_FOUND_USER_MSG = Object.freeze('User not found')
+
 const sendResponse = (res: Response) => (serviceResponse: User) =>
   res.status(200).send(insertedMsg(serviceResponse))
 
-const sendUserObjectToResponse = (res: Response) => (user: User) =>
-  res.status(200).send(user)
+const sendUserObjectToResponse = (res: Response) => (user: User) => {
+  if (isUserValid(user)) {
+    res.status(200).send(user)
+  } else {
+    res.status(404).send(NOT_FOUND_USER_MSG)
+  }
+}
+
+const isUserValid = (serviceResponse: User) => serviceResponse != undefined
 
 const buildService = (trx: Knex.Transaction) =>
   pipe(buildRepositories, buildUserService)(trx)
