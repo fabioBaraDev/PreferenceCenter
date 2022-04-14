@@ -8,7 +8,6 @@ import {
   getUserByEmail,
   getUserByIdWithEvents,
   getUsersByEmail,
-  insertEvents,
 } from '../../../../tests/helpers/cruds'
 import { clearDatabase } from '../../../../tests/helpers/infrastructure'
 import {
@@ -77,19 +76,6 @@ describe('postgres-repository test', () => {
 
       expect(foundUser.email).toStrictEqual(user.email)
       expect(foundUser.id).toStrictEqual(user.id)
-    })
-
-    it('should find a user by id with multiple events', async () => {
-      const events = await getEvents(db)
-
-      await insertEvents(db, events)
-
-      const foundUser = await db.transaction((trx) =>
-        repository(trx).user.findById(events[0].user_id)
-      )
-
-      expect(foundUser.events.length).toStrictEqual(2)
-      expect(foundUser.id).toStrictEqual(events[0].user_id)
     })
 
     it('should find a user by email', async () => {

@@ -1,3 +1,3 @@
 import { startupServer } from '../server'
 
-startupServer()
+startupServer(8080)

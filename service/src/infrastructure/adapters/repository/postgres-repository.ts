@@ -38,7 +38,7 @@ const userRepository = (knex: Knex.Transaction): UserRepository => {
         'u.id as id',
         'u.email as email',
         knex.raw(
-          `json_agg(json_build_object('id', e.id, 'user_id', e.user_id, 'type', e.type, 'status', e.status)) as events`
+          `json_agg(json_build_object('id', e.id, 'user_id', e.user_id, 'type', e.type, 'status', e.status) ORDER BY e.id) as events`
         )
       )
       .from('users as u')

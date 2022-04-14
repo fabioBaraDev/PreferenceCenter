@@ -1,5 +1,5 @@
 import { Knex } from 'knex'
-import { applyTo, partial, pipe, prop, unary } from 'ramda'
+import { applyTo, pipe, prop, unary } from 'ramda'
 
 import { User } from '@/domain/model/entities'
 import { ERRORS_CODES } from '@/domain/model/erros'
@@ -9,7 +9,6 @@ import {
   getHistoricalEventByUserId,
   getUserByEmail,
   getUserByIdWithEvents,
-  insertEvents,
 } from '@/tests/helpers/cruds'
 import {
   createUserWithEvents,
@@ -116,23 +115,6 @@ describe('services test', () => {
       expect(foundUser.id).toStrictEqual(user.id)
     })
 
-    it('should find a user by id with multiple events', async () => {
-      const events = await getEvents(db)
-
-      await insertEvents(db, events)
-
-      const foundUser = await db.transaction(
-        pipe(
-          buildUserServices,
-          getFindUserByIdService,
-          applyTo(events[0].user_id)
-        )
-      )
-
-      expect(foundUser.events.length).toStrictEqual(2)
-      expect(foundUser.id).toStrictEqual(events[0].user_id)
-    })
-
     it('should find a user by email', async () => {
       const user = await getDataBaseUser(db)
 
@@ -183,11 +165,8 @@ describe('services test', () => {
     it('should insert a event with multiple types', async () => {
       const eventSmsAndEmailPayload = await getEvents(db)
 
-      const transactionPromises = eventSmsAndEmailPayload.map(
-        partial(executeHistoricalServiceTransaction, [db])
-      )
-
-      await Promise.all(transactionPromises)
+      await executeHistoricalServiceTransaction(db, eventSmsAndEmailPayload[0])
+      await executeHistoricalServiceTransaction(db, eventSmsAndEmailPayload[1])
 
       const createdUserWithEvent = await getUserByIdWithEvents(
         db,

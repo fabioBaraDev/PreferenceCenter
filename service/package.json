@@ -10,7 +10,7 @@
     "build": "npx tsc",
     "start": "node -r ./../config/test.env src/index.js",
     "start:dev": "dotenv -e src/config/enviroment/test.env nodemon src/index.ts",
-    "test": "dotenv -e ../config/test.env --override -- jest --runInBand",
+    "test": "dotenv -e src/config/enviroment/test.env --override -- jest --runInBand",
     "test:watch": "npm test -- --watch --coverage=false"
   },
   "keywords": [],

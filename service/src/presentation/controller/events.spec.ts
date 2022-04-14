@@ -1,4 +1,4 @@
-import { Express } from 'express'
+import * as http from 'http'
 import { Knex } from 'knex'
 import supertest from 'supertest'
 
@@ -12,11 +12,8 @@ import { startupServer } from './../server/index'
 
 describe('Presentation - User unit tests', () => {
   let db: Knex
-  let request: supertest.SuperTest<supertest.Test>
   beforeAll(async () => {
     db = await database.connect()
-    const app: Express = await startupServer()
-    request = await supertest(app)
   })
 
   afterAll(async () => {
@@ -25,6 +22,8 @@ describe('Presentation - User unit tests', () => {
   })
 
   it('should post event to a user and return 200', async () => {
+    const app: http.Server = await startupServer(8080)
+    const request = await supertest(app)
     const event = await getEvents(db)
 
     const payload = {
@@ -43,5 +42,6 @@ describe('Presentation - User unit tests', () => {
     const dbRes: User = await getUserById(db, event[0].user_id)
 
     expect(event[0].user_id).toStrictEqual(dbRes.id)
+    app.close()
   })
 })

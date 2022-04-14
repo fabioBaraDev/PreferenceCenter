@@ -1,4 +1,4 @@
-import { Express } from 'express'
+import * as http from 'http'
 import { Knex } from 'knex'
 import supertest from 'supertest'
 
@@ -15,11 +15,9 @@ import { startupServer } from './../server/index'
 
 describe('Presentation - User unit tests', () => {
   let db: Knex
-  let request: supertest.SuperTest<supertest.Test>
+
   beforeAll(async () => {
     db = await database.connect()
-    const app: Express = await startupServer()
-    request = await supertest(app)
   })
 
   afterAll(async () => {
@@ -28,21 +26,33 @@ describe('Presentation - User unit tests', () => {
   })
 
   it('should get user and return 200', async () => {
+    const app: http.Server = await startupServer(8081)
+    const request = await supertest(app)
+
     const user = await getDataBaseUser(db)
     const res = await request.get('/users/' + user.email)
     expect(res.status).toStrictEqual(200)
+    app.close()
   })
 
   it('should delete user and return 202', async () => {
+    const app: http.Server = await startupServer(8082)
+    const request = await supertest(app)
+
     const user = await getDataBaseUser(db)
     const res = await request.delete('/users/' + user.email)
     expect(res.status).toStrictEqual(202)
+    app.close()
   })
   it('should post user and return 200', async () => {
+    const app: http.Server = await startupServer(8083)
+    const request = await supertest(app)
+
     const user = userPayloadFactory()
     await request.post('/users').send(user).expect(200)
     const dbRes: User[] = await getUsersByEmail(db, user.email)
 
     expect(user.email).toStrictEqual(dbRes[0].email)
+    app.close()
   })
 })
